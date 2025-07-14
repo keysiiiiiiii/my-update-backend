@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- 🔒 Role Check -->
+
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <a href="#" onclick="showView('dashboard-view'); return false;" class="active">Dashboard</a>
+    <a href="#" onclick="showView('staff-view'); return false;">Staff List</a>
+    <a href="#" onclick="showView('account-view'); return false;">Account Settings</a>
+    <a href="#" onclick="logout(); return false;">Logout</a>
+  </div>
+
+  <!-- MAIN CONTENT WRAPPER -->
+  <div class="main-content">
+    <!-- DASHBOARD VIEW -->
+    <section id="dashboard-view">
+      <h1>Admin Dashboard</h1>
+      <div class="calendar">
+        <div class="calendar-header">
+          <button id="prev">‹</button>
+          <h2 id="month-year"></h2>
+          <button id="next">›</button>
+        </div>
+        <div class="calendar-body">
+          <div class="day-names">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div>
+            <div>Thu</div><div>Fri</div><div>Sat</div>
+          </div>
+          <div class="days" id="calendar-days"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAFF LIST VIEW (initially hidden) -->
+    <section id="staff-view" class="hidden-view">
+      <h2>All Registered Staff</h2>
+      <table id="staffTable">
+        <thead>
+          <tr>
+            <th>Staff ID</th>
+            <th>Name</th>
+            <th>Employee Type</th>
+            <th>Sick Leave?</th>
+            <th>Other Leaves?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Staff will be injected here -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ACCOUNT SETTINGS VIEW (initially hidden) -->
+    <section id="account-view" class="hidden-view">
+      <div class="account-settings-card">
+        <div class="account-header">
+          <div>
+            <h1>Admin Name</h1>
+            <p class="employee-id">ID: ADMIN••••</p>
+          </div>
+          <button type="button" class="btn-edit">Edit</button>
+        </div>
+        <form class="account-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fullName">Full Name</label>
+              <input id="fullName" type="text" value="Admin" disabled>
+            </div>
+            <div class="form-group">
+              <label for="contactNumber">Contact Number</label>
+              <input id="contactNumber" type="tel" value="(09) " disabled>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="newPassword">Change Password</label>
+              <div class="password-wrapper">
+                <input id="newPassword" type="password" placeholder="••••••••" disabled />
+                <button type="button" class="eye-btn" aria-label="Show password">👁</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="employeeRole">Role</label>
+              <input id="employeeRole" type="text" value="Admin" disabled>
+            </div>
+          </div>
+          <div class="email-section">
+            <h2>My Email Address</h2>
+            <div class="email-item">
+              <div class="email-left">
+                <input type="checkbox" id="emailCheckbox" checked disabled>
+                <label for="emailCheckbox">admin@gmail.com</label>
+              </div>
+              <span class="email-timestamp">1 month ago</span>
+            </div>
+            <button type="button" class="add-email-btn">+ Add Email Address</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <!-- DATE MODAL -->
+  <div id="calendar-modal" class="modal">
+    <div class="modal-content">
+      <span id="close-modal" class="close">&times;</span>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="admin-calendar.js"></script>
+  <script src="common.js"></script>
+  <script>
+    // Staff list fetcher
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('http://localhost:3000/api/staff')
+        .then(response => response.json())
+        .then(data => {
+          const tbody = document.querySelector('#staffTable tbody');
+          data.forEach(staff => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${staff.staff_id}</td>
+              <td>${staff.name}</td>
+              <td>${staff.employee_type}</td>
+              <td>${staff.allow_sick_leave ? '✅' : '❌'}</td>
+              <td>${staff.allow_other_leaves ? '✅' : '❌'}</td>
+            `;
+            tbody.appendChild(row);
+          });
+        })
+        .catch(err => {
+          console.error('Failed to fetch staff list:', err);
+        });
+    });
+  </script>
+</body>
+</html>
