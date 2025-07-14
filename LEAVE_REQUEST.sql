@@ -1,0 +1,1 @@
+SELECT * FROM staff_leave_db.leave_requests;
